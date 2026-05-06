@@ -1,0 +1,17 @@
+{
+  "project": "termagent",
+  "mission": "local-first terminal-agent harness for reproducible tasks and proof bundles",
+  "steps": [
+    "scaffold",
+    "model-fixtures",
+    "implement-inspect-command",
+    "export-proof-bundle",
+    "tests-and-smoke",
+    "publish-and-protect"
+  ],
+  "safety": {
+    "network": "disabled",
+    "highRiskCommands": "explicit approval required",
+    "scope": "fixture path and output directory only"
+  }
+}
