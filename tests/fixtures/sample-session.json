@@ -1,0 +1,58 @@
+{
+  "sessionId": "demo-session-001",
+  "workspaceRoot": "./sample-workspace",
+  "objective": "Inspect a local repo, review proposed commands, and package proof for human review.",
+  "expectedPaths": [
+    "README.md",
+    "logs/run.log",
+    ".termagent/transcript.json"
+  ],
+  "commandReviews": [
+    {
+      "id": "cmd-1",
+      "command": "npm test",
+      "reason": "Run project checks before packaging proof bundle.",
+      "risk": "low",
+      "requiresApproval": false,
+      "approvalStatus": "approved",
+      "addedAt": "2026-05-06T09:00:00.000Z"
+    },
+    {
+      "id": "cmd-2",
+      "command": "rm -rf dist && npm run build",
+      "reason": "Clean build output before release prep.",
+      "risk": "high",
+      "requiresApproval": true,
+      "approvalStatus": "approved",
+      "addedAt": "2026-05-06T09:03:00.000Z"
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-05-06T09:00:00.000Z",
+      "role": "system",
+      "text": "Local-only mode enabled. No network calls allowed."
+    },
+    {
+      "at": "2026-05-06T09:01:00.000Z",
+      "role": "user",
+      "text": "Inspect the workspace and prepare a proof bundle."
+    },
+    {
+      "at": "2026-05-06T09:02:00.000Z",
+      "role": "agent",
+      "text": "I found one high-risk command and held it for approval.",
+      "meta": {
+        "pendingReview": true
+      }
+    },
+    {
+      "at": "2026-05-06T09:04:00.000Z",
+      "role": "tool",
+      "text": "Approval received. Build completed cleanly.",
+      "meta": {
+        "exitCode": 0
+      }
+    }
+  ]
+}
