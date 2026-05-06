@@ -19,3 +19,7 @@ format and uses semantic versioning when versioned releases are published.
   `https://github.com/rogerchappel/termagent/releases/latest`
 
 Replace placeholder links once the first release tag exists.
+
+## 0.1.0
+
+- Initial local-first MVP for fixture inspection and proof bundles.
