@@ -1,17 +1,24 @@
 {
   "project": "termagent",
-  "mission": "local-first terminal-agent harness for reproducible tasks and proof bundles",
+  "mission": "inspect local terminal-agent session fixtures and emit trustworthy proof bundles",
+  "status": "mvp-ready",
   "steps": [
-    "scaffold",
-    "model-fixtures",
-    "implement-inspect-command",
-    "export-proof-bundle",
-    "tests-and-smoke",
-    "publish-and-protect"
+    "frame-product-and-safety-boundaries",
+    "model-session-fixture",
+    "implement-inspection-engine",
+    "export-review-artifacts",
+    "verify-with-tests-and-smoke",
+    "prepare-release-and-branch-protection"
   ],
   "safety": {
     "network": "disabled",
+    "execution": "no fixture commands are executed",
     "highRiskCommands": "explicit approval required",
-    "scope": "fixture path and output directory only"
-  }
+    "scope": "read fixture/workspace, write only output artifacts"
+  },
+  "outputs": [
+    "summary.json",
+    "transcript.md",
+    "proof-bundle.md"
+  ]
 }

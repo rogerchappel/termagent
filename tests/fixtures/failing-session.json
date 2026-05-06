@@ -1,0 +1,27 @@
+{
+  "sessionId": "demo-session-002",
+  "workspaceRoot": "./sample-workspace",
+  "objective": "Catch missing evidence and pending approvals.",
+  "expectedPaths": [
+    "README.md",
+    "missing.txt"
+  ],
+  "commandReviews": [
+    {
+      "id": "cmd-9",
+      "command": "rm -rf release && npm pack",
+      "reason": "Prepare release payload.",
+      "risk": "high",
+      "requiresApproval": true,
+      "approvalStatus": "pending",
+      "addedAt": "2026-05-06T11:00:00.000Z"
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-05-06T11:00:00.000Z",
+      "role": "user",
+      "text": "Package the release."
+    }
+  ]
+}

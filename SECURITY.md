@@ -1,58 +1,25 @@
 # Security Policy
 
-## Supported Versions
-
-Replace this section with the supported versions for `termagent`.
-
-Example:
-
-```md
-| Version | Supported |
-| --- | --- |
-| .x | Yes |
-| < .0 | No |
-```
-
-If the project does not publish versioned releases yet, say that clearly.
-
-## Reporting a Vulnerability
-
-Please do not report suspected vulnerabilities in public issues, pull requests, or discussions.
-
-Ask maintainers for the private security reporting path before sharing details.
-
-If no private reporting path exists yet, ask maintainers through public project channels for a private reporting path. Do not include exploit details, secrets, personal data, or sensitive technical details in public messages.
-
-## What to Include
-
-When a private reporting path is available, include:
-
-- A clear description of the issue.
-- Affected versions, files, packages, workflows, or configuration.
-- Steps to reproduce, proof of concept, or attack scenario when safe to share.
-- Potential impact.
-- Suggested mitigation, if known.
-
-## Response Expectations
-
-Maintainers review good-faith reports as capacity allows.
-
-Do not imply paid support, guaranteed response times, guaranteed fixes, or service-level agreements unless `termagent` explicitly provides them.
-
 ## Scope
 
-In scope:
+termagent is a local-first inspection tool. It should not make network calls, execute fixture commands, or collect telemetry.
 
-- Vulnerabilities in termagent.
-- Insecure default configuration shipped by this project.
-- CI, release, or dependency guidance maintained by this project.
+## Supported versions
 
-Out of scope:
+Only the latest release on `main` is supported.
 
-- General support requests.
-- Requests for guaranteed maintenance timelines.
-- Issues in unrelated downstream projects.
+## Reporting a vulnerability
 
-## Disclosure
+Open a private security advisory or email the maintainer through the address listed on GitHub if a private path is preferred.
 
-Coordinate disclosure with maintainers before publishing vulnerability details.
+Please report issues such as:
+- unintended command execution
+- path traversal or unsafe output writes
+- accidental network access or telemetry
+- proof bundle data leaks beyond the inspected fixture/workspace
+
+## Security expectations
+
+- risky commands remain data, not executable instructions
+- output paths are caller-controlled and explicit
+- inspection results should be deterministic from local inputs

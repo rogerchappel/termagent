@@ -9,4 +9,5 @@ node "$ROOT_DIR/dist/src/index.js" inspect "$ROOT_DIR/tests/fixtures/sample-sess
 test -f "$OUT_DIR/summary.json"
 test -f "$OUT_DIR/transcript.md"
 test -f "$OUT_DIR/proof-bundle.md"
+grep -q 'termagent proof bundle' "$OUT_DIR/proof-bundle.md"
 echo "smoke ok: artifacts written to $OUT_DIR"

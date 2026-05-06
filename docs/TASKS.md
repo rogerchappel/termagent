@@ -1,15 +1,17 @@
 # termagent Tasks
 
-## Foundation
-- Scaffold a TypeScript CLI package with docs, tests, validation, and release metadata.
-- Define a fixture format for sessions, command reviews, transcripts, and expected workspace outputs.
+## Done
+- Scaffold TypeScript CLI package and release metadata.
+- Define fixture schema for sessions, transcripts, command review, and workspace expectations.
+- Implement `inspect` command with structured exit codes.
+- Export summary, transcript, and proof bundle artifacts.
+- Add unit tests for passing and failing fixture flows.
+- Add CLI smoke test and validation script.
+- Document safety model, fixture shape, and review workflow.
 
-## MVP
-- Implement `termagent inspect <fixture.json> --output <dir>`.
-- Run workspace checks for expected files and high-risk approvals.
-- Export `summary.json`, `transcript.md`, and `proof-bundle.md`.
-
-## Quality
-- Add unit coverage for inspect/export flow.
-- Add fixture-backed CLI smoke tests.
-- Keep the project local-first with no hidden network behavior.
+## Next
+- Add JSON Schema output for fixtures.
+- Add optional transcript redaction helpers.
+- Add compact SARIF or check-run export for CI integrations.
+- Add diff-aware workspace assertions.
+- Add bundle signing or checksum manifests for tamper evidence.

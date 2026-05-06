@@ -1,17 +1,19 @@
 {
   "name": "termagent",
   "version": "0.1.0",
-  "description": "Local-first terminal-agent harness for reproducible tasks, transcript export, command review, and proof bundles.",
+  "description": "Local-first CLI for inspecting terminal-agent session fixtures and exporting proof bundles.",
   "type": "module",
   "bin": {
-    "termagent": "./dist/index.js"
+    "termagent": "./dist/src/index.js"
   },
   "files": [
     "dist",
     "docs",
     "scripts",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "SECURITY.md",
+    "CONTRIBUTING.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -19,16 +21,18 @@
     "test": "node --test dist/tests/*.test.js",
     "pretest": "npm run build",
     "smoke": "bash scripts/smoke.sh",
+    "validate": "bash scripts/validate.sh",
     "package:smoke": "npm pack --dry-run",
     "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "cli",
-    "terminal",
-    "agent",
+    "terminal-agent",
+    "audit",
+    "proof-bundle",
     "local-first",
     "transcripts",
-    "proof-bundles"
+    "approvals"
   ],
   "author": "Roger Chappel",
   "license": "MIT",

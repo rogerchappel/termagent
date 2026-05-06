@@ -1,17 +1,22 @@
 #!/usr/bin/env node
 import { runInspectCommand } from './commands/inspect.js';
 
+function printHelp(): void {
+  console.log(`termagent
+
+Usage:
+  termagent inspect <fixture.json> [--output <dir>] [--summary-only]
+  termagent --help
+
+Commands:
+  inspect   Inspect a local terminal-agent fixture, verify review state, and export proof artifacts.`);
+}
+
 async function main(): Promise<void> {
   const [, , command, ...args] = process.argv;
 
   if (!command || command === '--help' || command === '-h') {
-    console.log(`termagent
-
-Usage:
-  termagent inspect <fixture.json> --output <dir>
-
-Commands:
-  inspect   Verify a local terminal-agent fixture, review command safety, and export proof artifacts.`);
+    printHelp();
     return;
   }
 
@@ -20,6 +25,7 @@ Commands:
     exitCode = await runInspectCommand(args);
   } else {
     console.error(`Unknown command: ${command}`);
+    printHelp();
     exitCode = 1;
   }
 
@@ -27,6 +33,6 @@ Commands:
 }
 
 main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : String(error));
+  console.error(error instanceof Error ? error.stack ?? error.message : String(error));
   process.exitCode = 1;
 });

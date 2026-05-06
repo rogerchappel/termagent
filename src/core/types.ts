@@ -1,10 +1,11 @@
 export type ApprovalStatus = 'approved' | 'rejected' | 'pending';
+export type RiskLevel = 'low' | 'medium' | 'high';
 
 export interface CommandReview {
   id: string;
   command: string;
   reason: string;
-  risk: 'low' | 'medium' | 'high';
+  risk: RiskLevel;
   requiresApproval: boolean;
   approvalStatus: ApprovalStatus;
   addedAt: string;

@@ -21,16 +21,19 @@ export async function runInspectCommand(args: string[]): Promise<number> {
   }
 
   const result = await inspectFixture({ fixturePath, outputDir, summaryOnly });
+  const passedChecks = result.checks.filter((check) => check.passed).length;
+  const failedChecks = result.checks.length - passedChecks;
+
   if (summaryOnly) {
     console.log(JSON.stringify({
       sessionId: result.sessionId,
       objective: result.objective,
-      passedChecks: result.checks.filter((check) => check.passed).length,
-      failedChecks: result.checks.filter((check) => !check.passed).length
+      passedChecks,
+      failedChecks
     }, null, 2));
-    return result.checks.every((check) => check.passed) ? 0 : 2;
+    return failedChecks === 0 ? 0 : 2;
   }
 
   console.log(JSON.stringify(result, null, 2));
-  return result.checks.every((check) => check.passed) ? 0 : 2;
+  return failedChecks === 0 ? 0 : 2;
 }

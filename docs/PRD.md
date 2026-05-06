@@ -1,81 +1,82 @@
-# termagent
+# termagent PRD
 
-Status: in-progress
-Decision: backlog
+Status: ready
+Decision: build
 
-## Scorecard
+## Summary
 
-Total: 0/100
-Band: public backlog
-Last scored: 2026-05-02
-Scored by: Neo
+termagent is a local-first CLI that inspects terminal-agent session fixtures and emits a reviewable proof bundle. It is for developers who want a tiny, deterministic layer between an agent run and a human sign-off.
 
-| Criterion | Points | Notes |
-|---|---:|---|
-| Problem pain | 0/20 | Needs qualification. |
-| Demand signal | 0/20 | Seed signal from source repo; needs independent validation. |
-| V1 buildability | 0/20 | Needs scoping pass. |
-| Differentiation | 0/15 | Renamed/reframed from adjacent inspiration. |
-| Agentic workflow leverage | 0/15 | Needs workflow fit assessment. |
-| Distribution potential | 0/10 | Needs demo/content angle. |
+## Problem
 
-## Pitch
+Terminal agents can modify a workspace quickly, but review quality often collapses into scrolling raw logs and guessing whether risky commands were actually approved. Teams need a lightweight proof artifact that answers:
+- what was the session trying to do?
+- which risky commands were proposed?
+- were they approved, rejected, or still pending?
+- did the workspace end up with the expected outputs?
 
-A lightweight terminal-agent harness focused on reproducible local tasks, transcript export, and safe command review.
+## Users
 
-## Why It Matters
+- solo developers running local agents
+- maintainers reviewing agent-assisted changes before merge or release
+- incident responders who need a compact session bundle for follow-up
 
-This is a renamed backlog idea inspired by an external repo/activity signal. It should be treated as a fresh OSS concept, not a copy of the source project. The first qualification pass should identify Roger-specific workflow value, defensible differentiation, and a tiny local-first V1.
+## Goals
 
-## Qualification
+- deterministic, local-only inspection of session fixtures
+- human-readable proof bundle with enough detail to review quickly
+- machine-readable summary for CI or chained tooling
+- clear failure signals when approvals or expected outputs are missing
 
-### Pub Test
+## Non-goals
 
-Can this be explained clearly in one sentence to local-first or agentic-tooling developers? Needs validation.
+- live terminal orchestration
+- remote agent control
+- hidden execution or telemetry
+- replacing a full workflow engine in V1
 
-### Competitors / Adjacent Tools
+## MVP scope
 
-- `codex fork` — source inspiration: https://github.com/vincentkoc/codex (Rust, stars/forks signal: 1).
+### CLI
+- `termagent inspect <fixture.json> --output <dir> [--summary-only]`
 
-### Star / Demand Signal
+### Inputs
+- session metadata
+- transcript entries
+- command review entries
+- expected workspace paths
 
-Seed signal from the linked public repository list shared by Roger on 2026-05-02. Re-check stars, forks, issues, and recent commits before promoting to ready.
+### Checks
+- workspace root exists
+- expected files exist
+- high-risk commands are explicitly approved
+- approval metadata is internally consistent
+- reviewed commands have matching transcript evidence
 
-### Real Problem
+### Outputs
+- `summary.json`
+- `transcript.md`
+- `proof-bundle.md`
 
-Needs a qualification pass to separate durable workflow pain from novelty. Prefer local-first, testable, agent-useful slices.
+## UX principles
 
-### V1 Buildability
+- boring and explicit beats magical
+- failures should read like a review checklist, not a stack trace
+- safe by default, especially around risky commands
+- results should work in both terminal and PR/release attachments
 
-Likely buildable as a deterministic CLI/library/demo if scoped to fixtures, local files, and explicit external calls only.
+## Differentiation
 
-## V1 Scope
-
-- Task session runner abstraction
-- Command approval transcript format
-- Local workspace safety checks
-- Export proof bundle for reviews
-
-## Out of Scope
-
-- Copying the source repo name or implementation directly.
-- Hidden network calls, credential scraping, telemetry, or publishing.
-- Broad platform replacement in V1.
-
-## CLI/API Sketch
-
-```bash
-termagent --help
-termagent inspect ./fixtures/sample --output ./out
-```
+termagent is not trying to be a general agent runner. It focuses on proof, review, and deterministic artifacts. That makes it smaller, easier to trust, and easier to plug into an existing local workflow.
 
 ## Verification
 
-- Unit tests for fixture parsing and report generation.
-- CLI smoke test using local fixtures.
-- README with install, quickstart, safety notes, and source attribution.
-- No hidden network, credential, or publish behavior.
+- unit tests for inspection and export
+- failing fixture coverage for risky/pending cases
+- smoke script against real built CLI output
+- package dry-run
+- CI build/test/check
 
-## Agent Prompt
+## Attribution
 
-Build `termagent` as a renamed, local-first OSS idea inspired by `codex fork`. Preserve attribution, avoid direct copying, and focus V1 on deterministic fixtures, clear safety boundaries, and practical agent/developer workflow value.
+The original spark came from adjacent experiments including `codex` by Vincent Koc. termagent intentionally avoids name, code, and scope copying; it keeps only the broader inspiration of a terminal-centric agent workflow.
