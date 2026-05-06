@@ -1,0 +1,48 @@
+{
+  "name": "termagent",
+  "version": "0.1.0",
+  "description": "Local-first terminal-agent harness for reproducible tasks, transcript export, command review, and proof bundles.",
+  "type": "module",
+  "bin": {
+    "termagent": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test dist/tests/**/*.test.js",
+    "pretest": "npm run build",
+    "smoke": "bash scripts/smoke.sh"
+  },
+  "keywords": [
+    "cli",
+    "terminal",
+    "agent",
+    "local-first",
+    "transcripts",
+    "proof-bundles"
+  ],
+  "author": "Roger Chappel",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogerchappel/termagent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/termagent/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/termagent#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "typescript": "^5.8.3"
+  }
+}
