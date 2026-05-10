@@ -22,7 +22,7 @@
     "pretest": "npm run build",
     "smoke": "bash scripts/smoke.sh",
     "validate": "bash scripts/validate.sh",
-    "package:smoke": "npm pack --dry-run",
+    "package:smoke": "bash scripts/package-smoke.sh",
     "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
