@@ -123,6 +123,10 @@ The markdown proof bundle includes:
 - output writes stay inside the directory you choose
 - high-risk commands must carry explicit approval state
 
+## Agent Skill
+
+See [SKILL.md](SKILL.md) for when an agent should inspect a session fixture, what output writes require approval, and how to validate proof-bundle evidence.
+
 ## CLI
 
 ```text
