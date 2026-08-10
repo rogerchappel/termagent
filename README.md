@@ -142,6 +142,9 @@ Exit codes:
 - `1` usage or runtime error
 - `2` inspection completed but one or more checks failed
 
+`--output` requires a directory value. Unknown options and missing option values are
+reported as usage errors without creating output artifacts.
+
 ## Development
 
 ```bash
