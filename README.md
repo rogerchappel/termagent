@@ -92,11 +92,26 @@ A fixture captures a session snapshot:
     {
       "at": "2026-05-06T09:04:00.000Z",
       "role": "tool",
-      "text": "Approval received. Build completed cleanly."
+      "text": "Approval received. Build completed cleanly.",
+      "meta": {
+        "commandReviewId": "cmd-2",
+        "approvalStatus": "approved"
+      }
     }
   ]
 }
 ```
+
+Approval metadata follows one invariant: when `requiresApproval` is `false`,
+`approvalStatus` must remain `pending` because no approval decision applies. When
+`requiresApproval` is `true`, the status may be `pending`, `approved`, or
+`rejected`.
+
+Every high-risk or approval-required command review must be linked to transcript
+evidence. Add `meta.commandReviewId` with the review's exact `id` and
+`meta.approvalStatus` with its current status to an applicable transcript entry.
+Evidence is checked per review; an unlinked approval phrase or evidence for a
+different command does not satisfy the check.
 
 ## Example workflow
 
