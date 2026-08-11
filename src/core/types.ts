@@ -15,7 +15,10 @@ export interface TranscriptEntry {
   at: string;
   role: 'system' | 'agent' | 'user' | 'tool';
   text: string;
-  meta?: Record<string, string | number | boolean>;
+  meta?: Record<string, string | number | boolean> & {
+    commandReviewId?: string;
+    approvalStatus?: ApprovalStatus;
+  };
 }
 
 export interface WorkspaceCheck {

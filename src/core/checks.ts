@@ -2,8 +2,10 @@ import path from 'node:path';
 import { fileExists, listRelativeFiles } from '../lib/fs.js';
 import type { SessionFixture, WorkspaceCheck } from './types.js';
 
-function includesApprovalEvidence(text: string): boolean {
-  return /approv(ed|al)|reject(ed)?|pending review|held for approval/i.test(text);
+function hasLinkedReviewEvidence(fixture: SessionFixture, reviewId: string, approvalStatus: string): boolean {
+  return fixture.transcript.some((entry) =>
+    entry.meta?.commandReviewId === reviewId && entry.meta.approvalStatus === approvalStatus
+  );
 }
 
 export async function runWorkspaceChecks(fixtureDir: string, fixture: SessionFixture): Promise<WorkspaceCheck[]> {
@@ -40,27 +42,27 @@ export async function runWorkspaceChecks(fixtureDir: string, fixture: SessionFix
       : `${highRiskPending.length} high-risk command(s) are still pending or rejected.`
   });
 
-  const inconsistentApprovals = fixture.commandReviews.filter((review) => !review.requiresApproval && review.approvalStatus !== 'approved');
+  const inconsistentApprovals = fixture.commandReviews.filter((review) => !review.requiresApproval && review.approvalStatus !== 'pending');
   checks.push({
     name: 'approval-metadata-consistent',
     passed: inconsistentApprovals.length === 0,
     detail: inconsistentApprovals.length === 0
       ? 'Approval metadata is internally consistent.'
-      : `${inconsistentApprovals.length} command(s) do not require approval but were marked ${inconsistentApprovals.map((r) => r.approvalStatus).join(', ')}.`
+      : `${inconsistentApprovals.length} command(s) do not require approval but record an approval decision (${inconsistentApprovals.map((r) => `${r.id}: ${r.approvalStatus}`).join(', ')}).`
   });
 
   const transcriptHasEvidence = fixture.commandReviews.every((review) => {
     if (review.risk !== 'high' && !review.requiresApproval) {
       return true;
     }
-    return fixture.transcript.some((entry) => includesApprovalEvidence(entry.text));
+    return hasLinkedReviewEvidence(fixture, review.id, review.approvalStatus);
   });
   checks.push({
     name: 'transcript-captures-review-state',
     passed: transcriptHasEvidence,
     detail: transcriptHasEvidence
-      ? 'Transcript includes approval/review evidence for risky commands.'
-      : 'Transcript is missing approval/review evidence for one or more risky commands.'
+      ? 'Transcript includes linked, state-matched evidence for every applicable command review.'
+      : 'Transcript is missing linked, state-matched evidence for one or more applicable command reviews.'
   });
 
   return checks;
