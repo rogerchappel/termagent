@@ -7,6 +7,7 @@ import os from 'node:os';
 
 const cliPath = path.resolve('dist/src/index.js');
 const fixturePath = path.resolve('tests/fixtures/sample-session.json');
+const failingFixturePath = path.resolve('tests/fixtures/failing-session.json');
 
 function runCli(args: string[], cwd: string) {
   return spawnSync(process.execPath, [cliPath, 'inspect', fixturePath, ...args], {
@@ -54,4 +55,16 @@ test('inspect CLI accepts --output with --summary-only', async () => {
   assert.equal(summary.failedChecks, 0);
   assert.ok(summary.passedChecks > 0);
   assert.deepEqual((await readdir(outputDir)).sort(), ['proof-bundle.md', 'summary.json', 'transcript.md']);
+});
+
+test('inspect CLI preserves exit code 2 when integrity checks fail', async () => {
+  const cwd = await mkdtemp(path.join(os.tmpdir(), 'termagent-cli-fail-'));
+  const result = spawnSync(process.execPath, [cliPath, 'inspect', failingFixturePath, '--output', path.join(cwd, 'proof'), '--summary-only'], {
+    cwd,
+    encoding: 'utf8'
+  });
+
+  assert.equal(result.status, 2, result.stderr);
+  const summary = JSON.parse(result.stdout) as { failedChecks: number };
+  assert.ok(summary.failedChecks > 0);
 });
