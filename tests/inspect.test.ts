@@ -9,6 +9,7 @@ import type { ApprovalStatus, SessionFixture } from '../src/core/types.js';
 
 const passingFixturePath = path.resolve('tests/fixtures/sample-session.json');
 const failingFixturePath = path.resolve('tests/fixtures/failing-session.json');
+const packageSmokeFixturePath = path.resolve('scripts/fixtures/package-smoke-session.json');
 
 test('inspectFixture exports summary, transcript, and proof bundle', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'termagent-test-'));
@@ -65,6 +66,15 @@ test('approval metadata accepts pending when no approval is required', async () 
     requiresApproval: false, approvalStatus: 'pending', addedAt: '2026-05-06T09:00:00.000Z'
   }] });
   const checks = await runWorkspaceChecks(path.dirname(passingFixturePath), fixture);
+  assert.equal(checks.find((check) => check.name === 'approval-metadata-consistent')?.passed, true);
+});
+
+test('package smoke fixture preserves consistent approval metadata', async () => {
+  const fixture = JSON.parse(await readFile(packageSmokeFixturePath, 'utf8')) as SessionFixture;
+  fixture.workspaceRoot = path.relative(path.dirname(packageSmokeFixturePath), path.resolve('tests/fixtures/sample-workspace'));
+  fixture.expectedPaths = [];
+  const checks = await runWorkspaceChecks(path.dirname(packageSmokeFixturePath), fixture);
+
   assert.equal(checks.find((check) => check.name === 'approval-metadata-consistent')?.passed, true);
 });
 
