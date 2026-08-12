@@ -15,32 +15,7 @@ mkdir -p "$TMP_DIR/app/workspace/logs" "$TMP_DIR/app/workspace/.termagent"
 echo '# Package smoke workspace' > "$TMP_DIR/app/workspace/README.md"
 echo 'ok' > "$TMP_DIR/app/workspace/logs/run.log"
 echo '[]' > "$TMP_DIR/app/workspace/.termagent/transcript.json"
-cat > "$TMP_DIR/app/fixture.json" <<'JSON'
-{
-  "sessionId": "package-smoke-session",
-  "workspaceRoot": "./workspace",
-  "objective": "Verify the packed termagent CLI can inspect a fixture.",
-  "expectedPaths": ["README.md", "logs/run.log", ".termagent/transcript.json"],
-  "commandReviews": [
-    {
-      "id": "cmd-1",
-      "command": "npm test",
-      "reason": "Example low-risk verification command.",
-      "risk": "low",
-      "requiresApproval": false,
-      "approvalStatus": "approved",
-      "addedAt": "2026-05-06T09:00:00.000Z"
-    }
-  ],
-  "transcript": [
-    {
-      "at": "2026-05-06T09:01:00.000Z",
-      "role": "tool",
-      "text": "npm test completed."
-    }
-  ]
-}
-JSON
+cp "$ROOT_DIR/scripts/fixtures/package-smoke-session.json" "$TMP_DIR/app/fixture.json"
 
 cd "$TMP_DIR/app"
 npm init -y >/dev/null

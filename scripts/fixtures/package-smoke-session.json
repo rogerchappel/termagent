@@ -1,0 +1,24 @@
+{
+  "sessionId": "package-smoke-session",
+  "workspaceRoot": "./workspace",
+  "objective": "Verify the packed termagent CLI can inspect a fixture.",
+  "expectedPaths": ["README.md", "logs/run.log", ".termagent/transcript.json"],
+  "commandReviews": [
+    {
+      "id": "cmd-1",
+      "command": "npm test",
+      "reason": "Example low-risk verification command.",
+      "risk": "low",
+      "requiresApproval": false,
+      "approvalStatus": "pending",
+      "addedAt": "2026-05-06T09:00:00.000Z"
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-05-06T09:01:00.000Z",
+      "role": "tool",
+      "text": "npm test completed."
+    }
+  ]
+}
