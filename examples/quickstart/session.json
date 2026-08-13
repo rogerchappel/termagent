@@ -1,0 +1,31 @@
+{
+  "sessionId": "packaged-quickstart",
+  "workspaceRoot": "./workspace",
+  "objective": "Inspect the packaged example and export a proof bundle.",
+  "expectedPaths": [
+    "README.md",
+    "logs/run.log"
+  ],
+  "commandReviews": [
+    {
+      "id": "cmd-1",
+      "command": "npm test",
+      "reason": "Verify the project before preparing the proof bundle.",
+      "risk": "low",
+      "requiresApproval": false,
+      "approvalStatus": "pending",
+      "addedAt": "2026-05-06T09:00:00.000Z"
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-05-06T09:01:00.000Z",
+      "role": "tool",
+      "text": "Tests completed successfully.",
+      "meta": {
+        "commandReviewId": "cmd-1",
+        "exitCode": 0
+      }
+    }
+  ]
+}
