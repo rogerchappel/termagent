@@ -52,14 +52,17 @@ node dist/src/index.js inspect ./tests/fixtures/sample-session.json --output ./o
 
 ## Quickstart
 
+From a directory where you installed `termagent` with npm, run the packaged
+example fixture:
+
 ```bash
-termagent inspect ./tests/fixtures/sample-session.json --output ./out
+npx termagent inspect ./node_modules/termagent/examples/quickstart/session.json --output ./out
 ```
 
 Example summary-only run:
 
 ```bash
-termagent inspect ./tests/fixtures/sample-session.json --output ./out --summary-only
+npx termagent inspect ./node_modules/termagent/examples/quickstart/session.json --output ./out --summary-only
 ```
 
 Expected outputs:
