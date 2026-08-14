@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { mkdtemp, readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { inspectFixture } from '../src/core/inspect.js';
 import { runWorkspaceChecks } from '../src/core/checks.js';
@@ -35,6 +35,31 @@ test('inspectFixture reports failing checks for pending high-risk review and mis
   assert.equal(result.checks.some((check) => check.name === 'high-risk-commands-reviewed' && !check.passed), true);
   assert.equal(result.checks.some((check) => check.name === 'transcript-captures-review-state' && !check.passed), true);
   assert.equal(result.checks.some((check) => check.name === 'expected-path:missing.txt' && !check.passed), true);
+});
+
+test('inspectFixture rejects malformed nested fixture fields before writing artifacts', async () => {
+  const validReview = {
+    id: 'cmd-1', command: 'npm test', reason: 'Verify.', risk: 'low', requiresApproval: false,
+    approvalStatus: 'pending', addedAt: '2026-05-06T09:00:00.000Z'
+  };
+  const validTranscript = { at: '2026-05-06T09:01:00.000Z', role: 'tool', text: 'Done.' };
+  const cases: Array<[unknown, RegExp]> = [
+    [{ expectedPaths: 'README.md' }, /Invalid fixture: expectedPaths must be an array\./],
+    [{ expectedPaths: [42] }, /Invalid fixture: expectedPaths\[0\] must be a string\./],
+    [{ commandReviews: [{ ...validReview, risk: 'critical' }] }, /Invalid fixture: commandReviews\[0\]\.risk must be one of/],
+    [{ transcript: [{ ...validTranscript, meta: { approvalStatus: 'maybe' } }] }, /Invalid fixture: transcript\[0\]\.meta\.approvalStatus must be one of/]
+  ];
+
+  for (const [overrides, expectedError] of cases) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'termagent-invalid-fixture-'));
+    const fixturePath = path.join(tempDir, 'fixture.json');
+    const outputDir = path.join(tempDir, 'proof');
+    const fixture = fixtureWithReviews(overrides as Partial<SessionFixture>);
+    await writeFile(fixturePath, JSON.stringify(fixture), 'utf8');
+
+    await assert.rejects(inspectFixture({ fixturePath, outputDir }), expectedError);
+    assert.deepEqual(await readdir(tempDir), ['fixture.json']);
+  }
 });
 
 function fixtureWithReviews(overrides: Partial<SessionFixture> = {}): SessionFixture {
