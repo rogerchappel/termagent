@@ -2,10 +2,22 @@ import path from 'node:path';
 import { ensureDir, writeTextFile } from '../lib/fs.js';
 import type { InspectResult, SessionFixture } from './types.js';
 
+function escapeTableCell(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/\|/g, '\\|')
+    .replace(/`/g, '\\`')
+    .replace(/\r?\n/g, '<br>');
+}
+
+function listItem(value: string): string {
+  return value.replace(/\r?\n/g, '\n  ');
+}
+
 function toMarkdown(result: InspectResult, fixture: SessionFixture): string {
-  const checks = result.checks.map((check) => `- [${check.passed ? 'x' : ' '}] ${check.name}: ${check.detail}`).join('\n');
-  const commands = result.commandReviews.map((review) => `| ${review.id} | \`${review.command}\` | ${review.risk} | ${review.requiresApproval ? 'yes' : 'no'} | ${review.approvalStatus} | ${review.reason} |`).join('\n');
-  const transcript = fixture.transcript.map((entry) => `- ${entry.at} [${entry.role}] ${entry.text}`).join('\n');
+  const checks = result.checks.map((check) => `- [${check.passed ? 'x' : ' '}] ${listItem(check.name)}: ${listItem(check.detail)}`).join('\n');
+  const commands = result.commandReviews.map((review) => `| ${escapeTableCell(review.id)} | ${escapeTableCell(review.command)} | ${review.risk} | ${review.requiresApproval ? 'yes' : 'no'} | ${review.approvalStatus} | ${escapeTableCell(review.reason)} |`).join('\n');
+  const transcript = fixture.transcript.map((entry) => `- ${entry.at} [${entry.role}] ${listItem(entry.text)}`).join('\n');
 
   return [
     '# termagent proof bundle',
@@ -37,7 +49,7 @@ function toMarkdown(result: InspectResult, fixture: SessionFixture): string {
 function transcriptToMarkdown(fixture: SessionFixture): string {
   return fixture.transcript.map((entry) => {
     const meta = entry.meta ? ` ${JSON.stringify(entry.meta)}` : '';
-    return `- ${entry.at} [${entry.role}] ${entry.text}${meta}`;
+    return `- ${entry.at} [${entry.role}] ${listItem(entry.text)}${meta}`;
   }).join('\n');
 }
 

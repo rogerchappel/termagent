@@ -116,6 +116,13 @@ evidence. Add `meta.commandReviewId` with the review's exact `id` and
 Evidence is checked per review; an unlinked approval phrase or evidence for a
 different command does not satisfy the check.
 
+Fixtures are validated completely before termagent checks the workspace or creates
+the output directory. Required top-level fields and every nested transcript,
+command review, metadata, and expected-path value must match the shape above.
+Invalid input exits with code `1` and an actionable field path such as
+`Invalid fixture: expectedPaths must be an array.`; no proof artifacts are
+written.
+
 ## Example workflow
 
 1. Capture a local session fixture from your own harness.
@@ -131,6 +138,12 @@ The markdown proof bundle includes:
 - risky command review table
 - transcript timeline excerpt
 - artifact paths for downstream review
+
+Ordinary Markdown-significant fixture content is preserved without changing the
+document structure. Pipes and backticks in command-review fields are escaped,
+table-cell newlines render as line breaks, and multiline checks and transcript
+entries continue on indented lines within their original list item. The separate
+`transcript.md` export uses the same multiline list formatting.
 
 ## Safety model
 
