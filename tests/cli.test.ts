@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { mkdtemp, readdir } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import os from 'node:os';
 
@@ -67,4 +67,22 @@ test('inspect CLI preserves exit code 2 when integrity checks fail', async () =>
   assert.equal(result.status, 2, result.stderr);
   const summary = JSON.parse(result.stdout) as { failedChecks: number };
   assert.ok(summary.failedChecks > 0);
+});
+
+test('inspect CLI reports a regular-file workspace root as a failed check', async () => {
+  const cwd = await mkdtemp(path.join(os.tmpdir(), 'termagent-cli-file-root-'));
+  const localFixturePath = path.join(cwd, 'fixture.json');
+  const fixture = JSON.parse(await readFile(fixturePath, 'utf8')) as { workspaceRoot: string };
+  fixture.workspaceRoot = './fixture.json';
+  await writeFile(localFixturePath, JSON.stringify(fixture), 'utf8');
+
+  const result = spawnSync(process.execPath, [cliPath, 'inspect', localFixturePath], {
+    cwd,
+    encoding: 'utf8'
+  });
+
+  assert.equal(result.status, 2, result.stderr);
+  assert.doesNotMatch(result.stderr, /ENOTDIR/);
+  const inspection = JSON.parse(result.stdout) as { checks: Array<{ name: string; passed: boolean }> };
+  assert.equal(inspection.checks.some((check) => check.name === 'workspace-root-is-directory' && !check.passed), true);
 });
