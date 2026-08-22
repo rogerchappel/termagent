@@ -47,7 +47,7 @@ Terminal agents can modify a workspace quickly, but review quality often collaps
 - expected workspace paths
 
 ### Checks
-- workspace root exists
+- workspace root exists and is a directory
 - expected files exist
 - high-risk commands are explicitly approved
 - approval metadata is internally consistent
