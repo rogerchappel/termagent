@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { fileExists, listRelativeFiles } from '../lib/fs.js';
+import { fileExists, isDirectory, listRelativeFiles } from '../lib/fs.js';
 import type { SessionFixture, WorkspaceCheck } from './types.js';
 
 function hasLinkedReviewEvidence(fixture: SessionFixture, reviewId: string, approvalStatus: string): boolean {
@@ -20,6 +20,19 @@ export async function runWorkspaceChecks(fixtureDir: string, fixture: SessionFix
   });
 
   if (!workspaceExists) {
+    return checks;
+  }
+
+  const workspaceIsDirectory = await isDirectory(workspaceRoot);
+  checks.push({
+    name: 'workspace-root-is-directory',
+    passed: workspaceIsDirectory,
+    detail: workspaceIsDirectory
+      ? `Workspace root is a directory: ${workspaceRoot}`
+      : `Workspace root is not a directory: ${workspaceRoot}`
+  });
+
+  if (!workspaceIsDirectory) {
     return checks;
   }
 

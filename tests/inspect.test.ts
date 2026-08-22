@@ -37,6 +37,31 @@ test('inspectFixture reports failing checks for pending high-risk review and mis
   assert.equal(result.checks.some((check) => check.name === 'expected-path:missing.txt' && !check.passed), true);
 });
 
+test('workspace root checks distinguish missing paths, files, and directories', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'termagent-workspace-root-'));
+  const fixturePath = path.join(tempDir, 'fixture.json');
+  await writeFile(fixturePath, '{}', 'utf8');
+
+  const missingChecks = await runWorkspaceChecks(tempDir, fixtureWithReviews({ workspaceRoot: './missing' }));
+  assert.deepEqual(missingChecks, [{
+    name: 'workspace-root-exists',
+    passed: false,
+    detail: `Missing workspace root at ${path.join(tempDir, 'missing')}`
+  }]);
+
+  const fileChecks = await runWorkspaceChecks(tempDir, fixtureWithReviews({ workspaceRoot: './fixture.json' }));
+  assert.equal(fileChecks.find((check) => check.name === 'workspace-root-exists')?.passed, true);
+  assert.deepEqual(fileChecks.find((check) => check.name === 'workspace-root-is-directory'), {
+    name: 'workspace-root-is-directory',
+    passed: false,
+    detail: `Workspace root is not a directory: ${fixturePath}`
+  });
+
+  const directoryChecks = await runWorkspaceChecks(tempDir, fixtureWithReviews({ workspaceRoot: '.' }));
+  assert.equal(directoryChecks.find((check) => check.name === 'workspace-root-exists')?.passed, true);
+  assert.equal(directoryChecks.find((check) => check.name === 'workspace-root-is-directory')?.passed, true);
+});
+
 test('inspectFixture rejects malformed nested fixture fields before writing artifacts', async () => {
   const validReview = {
     id: 'cmd-1', command: 'npm test', reason: 'Verify.', risk: 'low', requiresApproval: false,

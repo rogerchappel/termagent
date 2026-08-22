@@ -123,6 +123,11 @@ Invalid input exits with code `1` and an actionable field path such as
 `Invalid fixture: expectedPaths must be an array.`; no proof artifacts are
 written.
 
+Workspace validation separately checks that `workspaceRoot` exists and is a
+directory before scanning expected paths. A missing root or a non-directory
+entry is reported as a structured failed check and exits with code `2` instead
+of surfacing a filesystem traversal error.
+
 ## Example workflow
 
 1. Capture a local session fixture from your own harness.
