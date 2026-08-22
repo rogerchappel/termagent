@@ -24,6 +24,14 @@ export async function fileExists(filePath: string): Promise<boolean> {
   }
 }
 
+export async function isDirectory(filePath: string): Promise<boolean> {
+  try {
+    return (await stat(filePath)).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 export async function listRelativeFiles(rootDir: string, prefix = ''): Promise<string[]> {
   const entries = await readdir(rootDir, { withFileTypes: true });
   const files: string[] = [];
