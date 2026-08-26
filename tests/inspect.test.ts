@@ -87,6 +87,29 @@ test('inspectFixture rejects malformed nested fixture fields before writing arti
   }
 });
 
+test('inspectFixture rejects duplicate command review IDs before writing artifacts', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'termagent-duplicate-review-'));
+  const fixturePath = path.join(tempDir, 'fixture.json');
+  const outputDir = path.join(tempDir, 'proof');
+  const review = {
+    id: 'cmd-duplicate', command: 'npm publish', reason: 'Release.', risk: 'high' as const,
+    requiresApproval: true, approvalStatus: 'approved' as const, addedAt: '2026-05-06T09:00:00.000Z'
+  };
+  await writeFile(fixturePath, JSON.stringify(fixtureWithReviews({
+    commandReviews: [review, { ...review, command: 'npm unpublish' }],
+    transcript: [{
+      at: '2026-05-06T09:01:00.000Z', role: 'user', text: 'Approved.',
+      meta: { commandReviewId: review.id, approvalStatus: review.approvalStatus }
+    }]
+  })), 'utf8');
+
+  await assert.rejects(
+    inspectFixture({ fixturePath, outputDir }),
+    /Invalid fixture: commandReviews\[1\]\.id duplicates commandReviews\[0\]\.id \("cmd-duplicate"\)\./
+  );
+  assert.deepEqual(await readdir(tempDir), ['fixture.json']);
+});
+
 test('exports Markdown-safe command rows and indented multiline transcripts', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'termagent-markdown-'));
   const fixturePath = path.join(tempDir, 'fixture.json');

@@ -69,6 +69,26 @@ test('inspect CLI preserves exit code 2 when integrity checks fail', async () =>
   assert.ok(summary.failedChecks > 0);
 });
 
+test('inspect CLI rejects duplicate command review IDs with no artifacts', async () => {
+  const cwd = await mkdtemp(path.join(os.tmpdir(), 'termagent-cli-duplicate-'));
+  const localFixturePath = path.join(cwd, 'fixture.json');
+  const outputDir = path.join(cwd, 'proof');
+  const fixture = JSON.parse(await readFile(fixturePath, 'utf8')) as {
+    commandReviews: Array<Record<string, unknown>>;
+  };
+  fixture.commandReviews.push({ ...fixture.commandReviews[0] });
+  await writeFile(localFixturePath, JSON.stringify(fixture), 'utf8');
+
+  const result = spawnSync(process.execPath, [cliPath, 'inspect', localFixturePath, '--output', outputDir], {
+    cwd,
+    encoding: 'utf8'
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /commandReviews\[2\]\.id duplicates commandReviews\[0\]\.id/);
+  assert.deepEqual(await readdir(cwd), ['fixture.json']);
+});
+
 test('inspect CLI reports a regular-file workspace root as a failed check', async () => {
   const cwd = await mkdtemp(path.join(os.tmpdir(), 'termagent-cli-file-root-'));
   const localFixturePath = path.join(cwd, 'fixture.json');
