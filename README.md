@@ -12,6 +12,7 @@ It has a pretty opinionated personality:
 A lot of agent tooling is good at *doing* work and weak at *proving* what happened.
 termagent focuses on the review layer:
 - deterministic fixture input
+- unique command review IDs so transcript evidence identifies exactly one review
 - explicit approval state for risky commands
 - workspace assertions for expected outputs
 - portable proof bundles for handoff, review, or incident follow-up
