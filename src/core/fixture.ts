@@ -15,7 +15,7 @@ function requireRecord(value: unknown, fieldPath: string): Record<string, unknow
   return value;
 }
 
-function requireString(value: unknown, fieldPath: string): void {
+function requireString(value: unknown, fieldPath: string): asserts value is string {
   if (typeof value !== 'string') fixtureError(fieldPath, 'a string');
 }
 
@@ -44,9 +44,17 @@ function validateFixture(value: unknown): asserts value is SessionFixture {
     requireString(item, `expectedPaths[${index}]`);
   });
 
+  const reviewIds = new Map<string, number>();
   requireArray(fixture.commandReviews, 'commandReviews').forEach((item, index) => {
     const review = requireRecord(item, `commandReviews[${index}]`);
     requireString(review.id, `commandReviews[${index}].id`);
+    const previousIndex = reviewIds.get(review.id);
+    if (previousIndex !== undefined) {
+      throw new Error(
+        `Invalid fixture: commandReviews[${index}].id duplicates commandReviews[${previousIndex}].id (${JSON.stringify(review.id)}).`
+      );
+    }
+    reviewIds.set(review.id, index);
     requireString(review.command, `commandReviews[${index}].command`);
     requireString(review.reason, `commandReviews[${index}].reason`);
     requireEnum(review.risk, `commandReviews[${index}].risk`, ['low', 'medium', 'high']);

@@ -11,6 +11,10 @@ format and uses semantic versioning when versioned releases are published.
 
 - Initial project setup.
 
+### Fixed
+
+- Reject duplicate command review IDs before checks or proof artifacts can be produced.
+
 ## Release Links
 
 - Unreleased:
