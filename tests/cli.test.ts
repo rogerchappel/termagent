@@ -69,6 +69,33 @@ test('inspect CLI preserves exit code 2 when integrity checks fail', async () =>
   assert.ok(summary.failedChecks > 0);
 });
 
+test('inspect CLI fails pending and rejected required approvals without reporting all checks passed', async () => {
+  for (const approvalStatus of ['pending', 'rejected']) {
+    const cwd = await mkdtemp(path.join(os.tmpdir(), `termagent-cli-${approvalStatus}-`));
+    const localFixturePath = path.join(cwd, 'fixture.json');
+    const fixture = JSON.parse(await readFile(fixturePath, 'utf8')) as Record<string, any>;
+    fixture.workspaceRoot = path.dirname(fixturePath);
+    fixture.expectedPaths = [];
+    fixture.commandReviews = [{
+      id: `medium-${approvalStatus}`, command: 'npm install', reason: 'Install.', risk: 'medium',
+      requiresApproval: true, approvalStatus, addedAt: '2026-05-06T09:00:00.000Z'
+    }];
+    fixture.transcript = [{
+      at: '2026-05-06T09:01:00.000Z', role: 'user', text: `Review is ${approvalStatus}.`,
+      meta: { commandReviewId: `medium-${approvalStatus}`, approvalStatus }
+    }];
+    await writeFile(localFixturePath, JSON.stringify(fixture), 'utf8');
+
+    const result = spawnSync(process.execPath, [cliPath, 'inspect', localFixturePath, '--summary-only'], {
+      cwd, encoding: 'utf8'
+    });
+    assert.equal(result.status, 2, result.stderr);
+    const summary = JSON.parse(result.stdout) as { passedChecks: number; failedChecks: number };
+    assert.ok(summary.failedChecks > 0);
+    assert.ok(summary.passedChecks < summary.passedChecks + summary.failedChecks);
+  }
+});
+
 test('inspect CLI rejects duplicate command review IDs with no artifacts', async () => {
   const cwd = await mkdtemp(path.join(os.tmpdir(), 'termagent-cli-duplicate-'));
   const localFixturePath = path.join(cwd, 'fixture.json');

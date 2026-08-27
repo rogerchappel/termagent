@@ -166,6 +166,43 @@ test('approval metadata accepts pending when no approval is required', async () 
   assert.equal(checks.find((check) => check.name === 'approval-metadata-consistent')?.passed, true);
 });
 
+test('required approvals pass only when approved at every risk level', async () => {
+  for (const risk of ['low', 'medium', 'high'] as const) {
+    for (const approvalStatus of ['pending', 'rejected', 'approved'] as ApprovalStatus[]) {
+      const fixture = fixtureWithReviews({
+        commandReviews: [{
+          id: `${risk}-${approvalStatus}`, command: 'npm publish', reason: 'Release.', risk,
+          requiresApproval: true, approvalStatus, addedAt: '2026-05-06T09:00:00.000Z'
+        }],
+        transcript: [{
+          at: '2026-05-06T09:01:00.000Z', role: 'user', text: `Review is ${approvalStatus}.`,
+          meta: { commandReviewId: `${risk}-${approvalStatus}`, approvalStatus }
+        }]
+      });
+      const checks = await runWorkspaceChecks(path.dirname(passingFixturePath), fixture);
+      assert.equal(
+        checks.find((check) => check.name === 'required-commands-approved')?.passed,
+        approvalStatus === 'approved',
+        `${risk} ${approvalStatus}`
+      );
+      assert.equal(
+        checks.find((check) => check.name === 'transcript-captures-review-state')?.passed,
+        true,
+        'linked evidence records state but does not grant approval'
+      );
+    }
+  }
+});
+
+test('high-risk commands require approval despite fixture metadata', async () => {
+  const fixture = fixtureWithReviews({ commandReviews: [{
+    id: 'high-metadata-false', command: 'npm publish', reason: 'Release.', risk: 'high',
+    requiresApproval: false, approvalStatus: 'pending', addedAt: '2026-05-06T09:00:00.000Z'
+  }] });
+  const checks = await runWorkspaceChecks(path.dirname(passingFixturePath), fixture);
+  assert.equal(checks.find((check) => check.name === 'required-commands-approved')?.passed, false);
+});
+
 test('package smoke fixture preserves consistent approval metadata', async () => {
   const fixture = JSON.parse(await readFile(packageSmokeFixturePath, 'utf8')) as SessionFixture;
   fixture.workspaceRoot = path.relative(path.dirname(packageSmokeFixturePath), path.resolve('tests/fixtures/sample-workspace'));

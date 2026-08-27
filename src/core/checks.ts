@@ -55,6 +55,17 @@ export async function runWorkspaceChecks(fixtureDir: string, fixture: SessionFix
       : `${highRiskPending.length} high-risk command(s) are still pending or rejected.`
   });
 
+  const requiredApprovalPending = fixture.commandReviews.filter((review) =>
+    (review.requiresApproval || review.risk === 'high') && review.approvalStatus !== 'approved'
+  );
+  checks.push({
+    name: 'required-commands-approved',
+    passed: requiredApprovalPending.length === 0,
+    detail: requiredApprovalPending.length === 0
+      ? 'Every approval-required command was explicitly approved.'
+      : `${requiredApprovalPending.length} approval-required command(s) are still pending or rejected (${requiredApprovalPending.map((review) => `${review.id}: ${review.approvalStatus}`).join(', ')}).`
+  });
+
   const inconsistentApprovals = fixture.commandReviews.filter((review) => !review.requiresApproval && review.approvalStatus !== 'pending');
   checks.push({
     name: 'approval-metadata-consistent',

@@ -30,7 +30,8 @@ Use this skill when an agent needs to inspect a terminal-agent session fixture a
 ## Approval Requirements
 
 - Ask before overwriting an existing proof bundle with unrelated user changes.
-- Ask before treating an unapproved high-risk command as acceptable.
+- Treat every approval-required command as acceptable only when its status is
+  `approved`, regardless of risk; high-risk commands always require approval.
 - Ask before moving, redacting, or deleting transcript content.
 
 ## Workflow
@@ -62,4 +63,3 @@ npm run build
 npm run smoke
 npm run package:smoke
 ```
-

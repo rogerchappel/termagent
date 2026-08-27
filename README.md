@@ -109,13 +109,16 @@ A fixture captures a session snapshot:
 Approval metadata follows one invariant: when `requiresApproval` is `false`,
 `approvalStatus` must remain `pending` because no approval decision applies. When
 `requiresApproval` is `true`, the status may be `pending`, `approved`, or
-`rejected`.
+`rejected`, but only `approved` passes inspection. This applies at every risk
+level. High-risk commands always require an approved review even if fixture
+metadata incorrectly sets `requiresApproval` to `false`.
 
 Every high-risk or approval-required command review must be linked to transcript
 evidence. Add `meta.commandReviewId` with the review's exact `id` and
 `meta.approvalStatus` with its current status to an applicable transcript entry.
 Evidence is checked per review; an unlinked approval phrase or evidence for a
-different command does not satisfy the check.
+different command does not satisfy the check. Linked pending or rejected evidence
+records the review state but does not count as approval.
 
 Fixtures are validated completely before termagent checks the workspace or creates
 the output directory. Required top-level fields and every nested transcript,
