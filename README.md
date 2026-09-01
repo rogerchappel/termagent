@@ -35,35 +35,35 @@ This project was inspired by adjacent terminal-agent experiments, including the 
 
 ## Install
 
-### From source
+The `termagent` name is not published to the npm registry yet. Install the
+current package from its GitHub source instead:
 
 ```bash
-npm install
+git clone https://github.com/rogerchappel/termagent.git
+cd termagent
+npm ci
 npm run build
 npm link
 ```
 
-### Local one-shot use
+To avoid a global link, run the same source checkout directly:
 
 ```bash
-npm install
-npm run build
 node dist/src/index.js inspect ./tests/fixtures/sample-session.json --output ./out
 ```
 
 ## Quickstart
 
-From a directory where you installed `termagent` with npm, run the packaged
-example fixture:
+From the source checkout installed above, run its packaged example fixture:
 
 ```bash
-npx termagent inspect ./node_modules/termagent/examples/quickstart/session.json --output ./out
+termagent inspect ./examples/quickstart/session.json --output ./out
 ```
 
 Example summary-only run:
 
 ```bash
-npx termagent inspect ./node_modules/termagent/examples/quickstart/session.json --output ./out --summary-only
+termagent inspect ./examples/quickstart/session.json --output ./out --summary-only
 ```
 
 Expected outputs:
