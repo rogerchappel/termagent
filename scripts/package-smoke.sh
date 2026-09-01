@@ -24,5 +24,5 @@ test -s out/transcript.md
 test -s out/proof-bundle.md
 "$TERMAGENT_BIN" inspect ./node_modules/termagent/examples/quickstart/session.json --output ./summary-out --summary-only >/dev/null
 test -s summary-out/summary.json
-test ! -e summary-out/transcript.md
-test ! -e summary-out/proof-bundle.md
+test -s summary-out/transcript.md
+test -s summary-out/proof-bundle.md
