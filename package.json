@@ -19,10 +19,10 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "check": "tsc --noEmit -p tsconfig.json",
-    "test": "node --test dist/tests/*.test.js",
-    "pretest": "npm run build",
+    "test": "node --test dist-test/tests/*.test.js",
+    "pretest": "npm run build && rm -rf dist-test && tsc -p tsconfig.test.json",
     "smoke": "bash scripts/smoke.sh",
     "validate": "bash scripts/validate.sh",
     "package:smoke": "bash scripts/package-smoke.sh",
