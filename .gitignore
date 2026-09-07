@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-test/
 .smoke-out/
 .real-smoke/
 !tests/fixtures/sample-workspace/logs/run.log
