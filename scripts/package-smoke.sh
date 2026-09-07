@@ -11,6 +11,17 @@ npm pack --pack-destination "$TMP_DIR" >/dev/null
 PACKAGE_TGZ="$(find "$TMP_DIR" -maxdepth 1 -name 'termagent-*.tgz' -print -quit)"
 test -n "$PACKAGE_TGZ"
 
+PACKAGE_FILES="$TMP_DIR/package-files.txt"
+tar -tzf "$PACKAGE_TGZ" | sort > "$PACKAGE_FILES"
+grep -qx 'package/dist/src/index.js' "$PACKAGE_FILES"
+grep -qx 'package/dist/src/index.d.ts' "$PACKAGE_FILES"
+grep -qx 'package/dist/src/core/inspect.js' "$PACKAGE_FILES"
+grep -qx 'package/dist/src/core/inspect.d.ts' "$PACKAGE_FILES"
+if grep -Eq '^package/dist/(tests/|.*\.test\.(js|d\.ts|js\.map)$)' "$PACKAGE_FILES"; then
+  echo "package contains test or source-map artifacts" >&2
+  exit 1
+fi
+
 mkdir -p "$TMP_DIR/app"
 cd "$TMP_DIR/app"
 npm init -y >/dev/null
