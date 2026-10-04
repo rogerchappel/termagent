@@ -214,7 +214,17 @@ Run the release gate before tagging or publishing:
 
 ```sh
 npm run release:check
-npm pack --dry-run
+npm run package:smoke
 ```
 
-The package smoke check prints the tarball contents so missing runtime files are caught before release.
+`npm run release:check` already includes the package smoke check. To run just the
+package-content verification from a clean checkout, install dependencies and
+invoke it directly:
+
+```sh
+npm ci
+npm run package:smoke
+```
+
+The check builds the package, inspects its tarball contents, and installs and
+runs the packaged CLI against the included quickstart fixture.
