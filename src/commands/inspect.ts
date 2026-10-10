@@ -32,7 +32,7 @@ export async function runInspectCommand(args: string[]): Promise<number> {
     }
   }
 
-  const result = await inspectFixture({ fixturePath, outputDir, summaryOnly });
+  const result = await inspectFixture({ fixturePath, outputDir, summaryOnly }, !summaryOnly);
   const passedChecks = result.checks.filter((check) => check.passed).length;
   const failedChecks = result.checks.length - passedChecks;
 
