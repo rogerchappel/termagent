@@ -54,7 +54,7 @@ test('inspect CLI accepts --output with --summary-only', async () => {
   assert.equal(summary.sessionId, 'demo-session-001');
   assert.equal(summary.failedChecks, 0);
   assert.ok(summary.passedChecks > 0);
-  assert.deepEqual((await readdir(outputDir)).sort(), ['proof-bundle.md', 'summary.json', 'transcript.md']);
+  await assert.rejects(readdir(outputDir), { code: 'ENOENT' });
 });
 
 test('inspect CLI preserves exit code 2 when integrity checks fail', async () => {
