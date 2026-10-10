@@ -4,7 +4,7 @@ import { runWorkspaceChecks } from './checks.js';
 import { exportArtifacts } from './export.js';
 import type { InspectOptions, InspectResult } from './types.js';
 
-export async function inspectFixture(options: InspectOptions): Promise<InspectResult> {
+export async function inspectFixture(options: InspectOptions, exportOutput = true): Promise<InspectResult> {
   const fixturePath = path.resolve(options.fixturePath);
   const fixtureDir = path.dirname(fixturePath);
   const fixture = await loadFixture(fixturePath);
@@ -19,7 +19,9 @@ export async function inspectFixture(options: InspectOptions): Promise<InspectRe
     transcriptCount: fixture.transcript.length
   };
 
-  const exportArtifactsResult = await exportArtifacts(path.resolve(options.outputDir), fixture, partial);
+  const exportArtifactsResult = exportOutput
+    ? await exportArtifacts(path.resolve(options.outputDir), fixture, partial)
+    : { summaryPath: '', transcriptPath: '', proofBundlePath: '' };
 
   return {
     ...partial,
