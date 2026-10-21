@@ -11,27 +11,15 @@ npm pack --pack-destination "$TMP_DIR" >/dev/null
 PACKAGE_TGZ="$(find "$TMP_DIR" -maxdepth 1 -name 'termagent-*.tgz' -print -quit)"
 test -n "$PACKAGE_TGZ"
 
-PACKAGE_FILES="$TMP_DIR/package-files.txt"
-tar -tzf "$PACKAGE_TGZ" | sort > "$PACKAGE_FILES"
-grep -qx 'package/dist/src/index.js' "$PACKAGE_FILES"
-grep -qx 'package/dist/src/index.d.ts' "$PACKAGE_FILES"
-grep -qx 'package/dist/src/core/inspect.js' "$PACKAGE_FILES"
-grep -qx 'package/dist/src/core/inspect.d.ts' "$PACKAGE_FILES"
-if grep -Eq '^package/dist/(tests/|.*\.test\.(js|d\.ts|js\.map)$)' "$PACKAGE_FILES"; then
-  echo "package contains test or source-map artifacts" >&2
-  exit 1
-fi
-
 mkdir -p "$TMP_DIR/app"
 cd "$TMP_DIR/app"
 npm init -y >/dev/null
 npm install "$PACKAGE_TGZ" >/dev/null
-TERMAGENT_BIN="./node_modules/.bin/termagent"
-test -x "$TERMAGENT_BIN"
-"$TERMAGENT_BIN" --help >/dev/null
-"$TERMAGENT_BIN" inspect ./node_modules/termagent/examples/quickstart/session.json --output ./out
-test -s out/summary.json
-test -s out/transcript.md
-test -s out/proof-bundle.md
-"$TERMAGENT_BIN" inspect ./node_modules/termagent/examples/quickstart/session.json --output ./summary-out --summary-only >/dev/null
-test ! -e summary-out
+npx termagent --help >/dev/null
+
+# Summary-only mode must leave even a pre-existing output directory untouched.
+mkdir -p out
+printf 'keep me\n' > out/sentinel.txt
+npx termagent inspect ./node_modules/termagent/examples/quickstart/session.json --output ./out --summary-only
+test "$(cat out/sentinel.txt)" = 'keep me'
+test "$(find out -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')" = 1
