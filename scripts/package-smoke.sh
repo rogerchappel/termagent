@@ -23,3 +23,24 @@ printf 'keep me\n' > out/sentinel.txt
 npx termagent inspect ./node_modules/termagent/examples/quickstart/session.json --output ./out --summary-only
 test "$(cat out/sentinel.txt)" = 'keep me'
 test "$(find out -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')" = 1
+
+# The package's public ESM surface and declarations must work from a clean consumer.
+cat > consumer.mjs <<'EOF'
+import assert from 'node:assert/strict';
+import { inspectFixture } from 'termagent/dist/src/core/inspect.js';
+import * as api from 'termagent/dist/src/core/types.js';
+assert.equal(typeof inspectFixture, 'function');
+assert.deepEqual(Object.keys(api), []);
+EOF
+node consumer.mjs
+cat > consumer.ts <<'EOF'
+import type { InspectOptions, InspectResult, SessionFixture } from 'termagent/dist/src/core/types.js';
+const options: InspectOptions = { fixturePath: 'fixture.json', outputDir: 'out', summaryOnly: true };
+let fixture: SessionFixture;
+let result: InspectResult;
+void [options, fixture!, result!];
+EOF
+cat > tsconfig.json <<'EOF'
+{"compilerOptions":{"target":"ES2022","module":"NodeNext","moduleResolution":"NodeNext","strict":true,"skipLibCheck":true,"noEmit":true},"include":["consumer.ts"]}
+EOF
+npx tsc -p tsconfig.json
